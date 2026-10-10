@@ -27,7 +27,7 @@ flows -> 60s windows (13 features, log1p) -> last-N-minute sequences -> models -
 - Earlier steps (features.py -> detect_eval.py --lstm -> dashboard/app.py -> WRITEUP.md) are finished.
 
 ## Still open
-- First commit + remote (git repo initialised, MIT LICENSE added) for the public source link, recorded demo video, built 5-slide deck (outline in docs/SLIDES.md).
+- Recorded demo video, built 5-slide deck (outline in docs/SLIDES.md). Repo is public: https://github.com/ydhitler1-arch/network-attack-world-model (MIT).
 - Optional: CIC-IDS2018 / CTU-13 (finer time resolution, multi-stage), stronger regularisation of the world model.
 
 ## Gotchas

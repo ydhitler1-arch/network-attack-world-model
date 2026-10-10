@@ -2,6 +2,8 @@
 
 Submission repository for **SIH 2026 PS 26153: AI-based Network Attack Forecasting from Network Traffic Data**.
 
+**Source code:** https://github.com/ydhitler1-arch/network-attack-world-model (MIT licence).
+
 A world model learns how network state evolves from traffic telemetry, rolls the state forward 6 steps, and reads off a probability of infiltration and an ATT&CK stage at every step, with a SHAP explanation for every prediction and an offline Streamlit demo that accepts a flow CSV or a PCAP.
 
 > **Read this first: what the results say.** Evaluated honestly on CIC-IDS2017, the temporal world model **does not beat a plain logistic-regression baseline** (PR-AUC 0.22 vs 0.45 for detecting the current window), shows **no reliable skill at predicting attacks minutes ahead**, and misses most unseen attack types. The problem statement asks the benchmark to show a measurable improvement from the temporal model; **on this data it does not**. Everything else (pipeline, explanations, demo) works and is validated. Details and caveats: [docs/BENCHMARK.md](docs/BENCHMARK.md), [docs/WORLD_MODEL.md](docs/WORLD_MODEL.md).
@@ -18,7 +20,7 @@ A world model learns how network state evolves from traffic telemetry, rolls the
 | 6 | Benchmark vs logistic regression (F1, precision, recall, FPR) showing a measurable improvement | **Benchmark done, improvement not shown**: logistic regression is better. Blocked CV with purge, leave-one-attack-type-out, bootstrap CIs. |
 | 7 | Training scripts, weights, reproducible config, open source | **Done**, MIT licensed ([LICENSE](LICENSE)). |
 
-Deliverables: README (this file), architecture document ([docs/ARCHITECTURE.pdf](docs/ARCHITECTURE.pdf), 2 pages), 5-slide outline ([docs/SLIDES.md](docs/SLIDES.md)), 2-minute demo script ([docs/DEMO_SCRIPT.md](docs/DEMO_SCRIPT.md)). **Not produced:** the recorded video, the built slide deck, and the public source link (the local git repository exists but has no commits and no remote yet).
+Deliverables: README (this file), architecture document ([docs/ARCHITECTURE.pdf](docs/ARCHITECTURE.pdf), 2 pages), 5-slide outline ([docs/SLIDES.md](docs/SLIDES.md)), 2-minute demo script ([docs/DEMO_SCRIPT.md](docs/DEMO_SCRIPT.md)). Source code: the GitHub link above. **Not produced:** the recorded video and the built slide deck.
 
 ## Setup
 
