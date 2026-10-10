@@ -1,0 +1,16 @@
+# Tested with Python 3.13.5 on Windows 11 (CPU only). Exact versions the results were produced with.
+numpy==2.2.6
+pandas==2.3.0
+pyarrow==25.0.1
+scipy==1.18.1
+scikit-learn==1.9.1
+xgboost==3.4.1
+torch==2.10.0
+shap==0.53.0
+scapy==2.5.0
+streamlit==1.65.0
+plotly==7.1.0
+
+# Optional, only to rebuild the architecture figure and PDF (docs/make_docs.py)
+# matplotlib==3.10.8
+# reportlab==4.4.9

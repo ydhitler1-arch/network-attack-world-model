@@ -1,0 +1,9 @@
+# Binary artifacts: never normalise line endings (would corrupt PDFs, weights, archives)
+*.pdf binary
+*.png binary
+*.pt binary
+*.npz binary
+*.pkl binary
+*.parquet binary
+*.gz binary
+*.pcap binary

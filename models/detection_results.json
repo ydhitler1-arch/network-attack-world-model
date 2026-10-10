@@ -1,0 +1,42 @@
+{
+  "anomaly(max|z|)": {
+    "pr_auc": 0.338210306985858,
+    "roc_auc": 0.649858392146978,
+    "threshold": 3.7911364720547645,
+    "episodes": 41,
+    "detected": 0.2682926829268293,
+    "within_1min": 0.24390243902439024,
+    "within_3min": 0.24390243902439024,
+    "median_delay": 0.0
+  },
+  "logistic_regression": {
+    "pr_auc": 0.6587660897044189,
+    "roc_auc": 0.8659223939954068,
+    "threshold": 0.912387942239306,
+    "episodes": 41,
+    "detected": 0.34146341463414637,
+    "within_1min": 0.1951219512195122,
+    "within_3min": 0.24390243902439024,
+    "median_delay": 1.0
+  },
+  "xgboost": {
+    "pr_auc": 0.4602729882491284,
+    "roc_auc": 0.7865397272167142,
+    "threshold": 0.7331183707714046,
+    "episodes": 41,
+    "detected": 0.3170731707317073,
+    "within_1min": 0.17073170731707318,
+    "within_3min": 0.24390243902439024,
+    "median_delay": 1.0
+  },
+  "lstm": {
+    "pr_auc": 0.6239133513107409,
+    "roc_auc": 0.8393267237999216,
+    "threshold": 0.9589037811756128,
+    "episodes": 41,
+    "detected": 0.21951219512195122,
+    "within_1min": 0.12195121951219512,
+    "within_3min": 0.17073170731707318,
+    "median_delay": 1.0
+  }
+}

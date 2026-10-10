@@ -1,0 +1,76 @@
+{
+ "completeness": {
+  "mean_abs_error": 0.09708986431360245,
+  "mean_abs_target": 1.1067914962768555,
+  "relative": 0.08772190660238266
+ },
+ "holdout_completeness": {
+  "mean_abs_error": 0.1035960391163826,
+  "mean_abs_target": 1.0458885431289673,
+  "relative": 0.09905074536800385
+ },
+ "deletion_test_holdout_fri_top100_k0": {
+  "3": {
+   "top_shap": 1.269158692508936,
+   "random": -0.021050238460302354,
+   "bottom_shap": -1.6355266973376275
+  },
+  "5": {
+   "top_shap": 1.7354253873229026,
+   "random": 0.01026565283536911,
+   "bottom_shap": -2.277365270256996
+  },
+  "10": {
+   "top_shap": 2.730078273117542,
+   "random": -0.04526381626725197,
+   "bottom_shap": -3.0195684023946523
+  }
+ },
+ "deletion_test_holdout_fri_all_k0": {
+  "3": {
+   "top_shap": 0.381058669569348,
+   "random": -0.0020903810267657477,
+   "bottom_shap": -0.6662441200279244
+  },
+  "5": {
+   "top_shap": 0.5140381508306571,
+   "random": -0.045138696165821494,
+   "bottom_shap": -1.1010664075550805
+  },
+  "10": {
+   "top_shap": 0.7746074150524458,
+   "random": -0.10463792118311924,
+   "bottom_shap": -2.1106149146415
+  }
+ },
+ "shap_library_crosscheck": {
+  "windows": 20,
+  "mean_pearson_feature_attribution": 0.9901641615912071,
+  "min_pearson": 0.9607079962087898
+ },
+ "logreg_linear_shap_max_abs_error": 7.62939453125e-06,
+ "logreg_vs_worldmodel_attack_windows_spearman_abs_shap": {
+  "n": 72,
+  "mean": 0.46159856230697294
+ },
+ "global_importance_k0_top10": {
+  "max_ports_per_src": 0.3019999861717224,
+  "small_pkt_ratio": 0.2720000147819519,
+  "top_pair_share": 0.2540000081062317,
+  "pkt_ratio_bwd_fwd": 0.19300000369548798,
+  "top_dstport_share": 0.18199999630451202,
+  "psh_ratio": 0.164000004529953,
+  "no_reply_ratio": 0.15399999916553497,
+  "mean_pkt_len_std": 0.14800000190734863,
+  "mean_down_up_ratio": 0.14499999582767487,
+  "large_pkt_ratio": 0.14399999380111694
+ },
+ "lag_importance_k0_oldest_to_newest": [
+  0.16200000047683716,
+  0.1589999943971634,
+  0.15700000524520874,
+  0.1459999978542328,
+  0.15399999916553497,
+  0.22200000286102295
+ ]
+}

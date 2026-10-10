@@ -1,0 +1,48 @@
+{
+  "seed": 42,
+  "device": "cpu",
+  "state_path": "data/state_v1.parquet",
+  "lookback": 6,
+  "horizon": 6,
+  "hidden": 128,
+  "dropout": 0.1,
+  "lr": 0.002,
+  "weight_decay": 0.0001,
+  "batch_size": 128,
+  "epochs": 80,
+  "patience": 12,
+  "clip_z": 8.0,
+  "pos_weight_cap": 5.0,
+  "use_dynamics": true,
+  "loss_weights": {"dynamics": 1.0, "infiltration": 1.0, "stage": 0.5},
+  "split": {
+    "note": "segments are capture days: 0=Mon (benign only), 1=Tue (Patator), 2=Wed (DoS), 3=Thu (web attacks), 4=Fri (Bot, DDoS, PortScan)",
+    "train_segments": [0, 1, 2],
+    "val_segments": [3],
+    "test_segments": [4]
+  },
+  "stages": ["Benign", "Reconnaissance", "Initial Access", "Lateral Movement", "Command & Control", "Exfiltration", "Impact (outside the 5 stages)"],
+  "label_to_stage": {
+    "BENIGN": "Benign",
+    "PortScan": "Reconnaissance",
+    "FTP-Patator": "Initial Access",
+    "SSH-Patator": "Initial Access",
+    "Web Attack - Brute Force": "Initial Access",
+    "Web Attack - XSS": "Initial Access",
+    "Web Attack - Sql Injection": "Initial Access",
+    "Heartbleed": "Initial Access",
+    "Infiltration": "Lateral Movement",
+    "Bot": "Command & Control",
+    "DoS Hulk": "Impact (outside the 5 stages)",
+    "DoS GoldenEye": "Impact (outside the 5 stages)",
+    "DoS slowloris": "Impact (outside the 5 stages)",
+    "DoS Slowhttptest": "Impact (outside the 5 stages)",
+    "DDoS": "Impact (outside the 5 stages)"
+  },
+  "outputs": {
+    "model": "models/world_model.pt",
+    "model_full": "models/world_model_full.pt",
+    "metrics": "models/world_model_metrics.json",
+    "train_log": "models/world_model_train_log.csv"
+  }
+}

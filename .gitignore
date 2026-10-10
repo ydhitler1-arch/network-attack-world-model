@@ -1,0 +1,16 @@
+data/**/*.csv
+data/*.csv
+data/*.parquet
+__pycache__/
+*.pyc
+models/*.pt
+models/*.npz
+.venv/
+
+# Submission artifacts that must ship (weights + files the offline demo loads)
+!models/world_model.pt
+!models/world_model_full.pt
+!models/explain_background.npz
+!data/state_v1.parquet
+# bulky intermediates
+models/bench_*.pkl
