@@ -34,7 +34,8 @@ Blocked 5-fold cross-validation with a purge gap, scaler refit per fold, thresho
 - **No established forecasting skill.** Predicting 3 minutes ahead, every model scores PR-AUC 0.18 to 0.27 against a base rate of 0.11; the world model is highest, but 11 of 12 paired comparisons are not significant. Attacks in this dataset start abruptly, with no ramp-up to learn from.
 - **Weak on unseen attacks.** Leave-one-attack-type-out mean recall: logistic regression 0.36, LSTM 0.25, world model 0.21. Bot, DoS GoldenEye and DoS Hulk are missed by every model.
 - **Learned dynamics barely beat a straight line.** A per-feature linear AR(1) predictor ties the LSTM at one step ahead and beats it further out.
-- **Thresholds drift for the neural models.** A threshold set for 2% false alarms gave 6.5% to 7.8% on test days (up to 17% on one day) for the LSTM models, but 2.0% for logistic regression. Label-free re-centring does not fix it; delayed analyst feedback on benign windows roughly halves the excess without losing recall ([docs/THRESHOLD_DRIFT.md](docs/THRESHOLD_DRIFT.md)).
+- **Thresholds drift for the neural models.** A threshold set for 2% false alarms gave 6.5% to 7.8% on test days (up to 17% on one day) for the LSTM models, but 2.0% for logistic regression. Label-free re-centring does not fix it; delayed analyst feedback on benign windows roughly halves the excess without losing recall ([docs/THRESHOLD_DRIFT.md](docs/THRESHOLD_DRIFT.md)). Tracing the causes ([docs/DRIFT_CAUSES.md](docs/DRIFT_CAUSES.md)) rejected three obvious explanations (day shift in benign traffic, attack echoes in the lookback, early-stopping contamination) and found two real ones: a calibration set with only about 6 tail windows, and unusual-volume minutes that the neural models score extremely.
+- **The simple model is hard to beat honestly.** Tuned and L1 logistic regression, interactions, XGBoost, extra-trees and ensembles all scored below the plain logistic regression under a protocol that selects on one validation half and calibrates on the other; selection on a small validation set picked models that were worse on test. A volume-conditional threshold gave a consistent but not significant recall gain at matched false-alarm rates ([docs/IMPROVING_THE_BASELINE.md](docs/IMPROVING_THE_BASELINE.md)).
 - **Explanations hold up.** Deleting the top 3 SHAP features lowers the score by 2.14 logits against about 0 for random features.
 
 The world model's training objective was revised after a first run found it significantly worse than logistic regression (PR-AUC 0.22); the first-run results are kept in `models/v1_original_objective/` and the reasoning is in [docs/OVERFITTING_TEST.md](docs/OVERFITTING_TEST.md).
@@ -90,6 +91,7 @@ python -W ignore src/explain.py                  # SHAP table and validation (~4
 python -W ignore tests/test_leakage.py     # no train/test leakage in the CV splits, and no look-ahead in the adaptive thresholds
 python -W ignore tests/test_phase1.py      # PCAP to state vector
 python -W ignore tests/test_phase5.py      # demo pipeline on the samples
+python -W ignore tests/test_threshold_methods.py   # the conservative threshold's coverage, checked by simulation
 python -W ignore tests/test_demo_app.py    # Streamlit demo smoke test
 ```
 
@@ -102,7 +104,7 @@ Seeds are fixed (42) and training is deterministic on CPU: repeated runs gave id
 | `src/data_loader.py`, `src/state.py` | CIC-IDS2017 loader, 43-feature state vector, scaler |
 | `src/pcap_to_flows.py` | PCAP to flows with Scapy (adds TTL, fragmentation, retransmission columns) |
 | `src/world_model.py`, `src/wm_train.py` | LSTM world model, rollout, training and sanity evaluation |
-| `src/benchmark.py`, `src/threshold_drift.py` | blocked CV with purge, leave-one-attack-type-out, bootstrap CIs; threshold-drift experiment |
+| `src/benchmark.py`, `src/threshold_drift.py`, `src/drift_analysis.py`, `src/calibration_bias.py`, `src/improve_baseline.py`, `src/vol_threshold_curve.py` | blocked CV with purge, leave-one-attack-type-out, bootstrap CIs; threshold-drift measurement, cause analysis and fixes; attempts to improve the baseline |
 | `src/explain.py`, `src/inference.py` | SHAP, counterfactual host analysis, demo pipeline |
 | `dashboard/demo.py` | the offline Streamlit demo (`dashboard/app.py` is an older replay dashboard) |
 | `configs/`, `models/`, `data/sample/` | config, trained weights and results, demo inputs |

@@ -35,6 +35,9 @@ jobs:
       - name: Leakage checks (purged blocked CV, leave-one-attack-type-out)
         run: python -W ignore tests/test_leakage.py
 
+      - name: Threshold-method checks (coverage by simulation)
+        run: python -W ignore tests/test_threshold_methods.py
+
       - name: PCAP to state vector
         run: python -W ignore tests/test_phase1.py
 

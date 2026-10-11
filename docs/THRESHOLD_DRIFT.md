@@ -8,7 +8,7 @@ The benchmark calibrates an alert threshold once, on a validation fold, for a 2%
 
 ## Setup
 
-Same blocked-CV samples as the main benchmark (2,095 test samples, 11% attack), task: detect the current window, neural models averaged over 3 seeds, world model with the revised objective. Four ways of setting the threshold, evaluated on identical samples:
+Same blocked-CV samples as the main benchmark (2,095 test samples, 11% attack), task: detect the current window, neural models averaged over 3 seeds, world model with the revised objective. Four ways of setting the threshold (plus two conservative variants, below), evaluated on identical samples:
 
 | strategy | what it does | needs |
 |---|---|---|
@@ -58,6 +58,23 @@ Realised false-alarm rate (target 2%) and recall, pooled over the test samples, 
 3. **Analyst feedback on benign windows does work for the neural models.** It cuts the overshoot by about half (LSTM 7.8% to 4.4%, world model 6.5% to 3.8%, both significant in the paired test), cuts the worst day roughly in half (17% to 9.5%, 13.8% to 7.4%), and leaves recall essentially unchanged. It does nothing for logistic regression, which did not need it.
 4. **It does not reach the target.** After feedback the neural models are still at about 4%, twice the 2% target, and Thursday is still at 7% to 10%.
 5. **The simplest fix is the model.** Logistic regression with a fixed threshold is better calibrated than either neural model with feedback. If an operator cannot supply feedback, the stable model is the practical choice.
+
+## Conservative finite-sample thresholds (added after the cause analysis)
+
+[DRIFT_CAUSES.md](DRIFT_CAUSES.md) found that each fold's threshold rests on only about 6 benign windows above the 98th percentile. A threshold can instead be chosen as the lowest one whose true false-alarm rate is at most the target with probability 80% (`conf80`) or 90% (`conf90`), using the exact distribution of order statistics (validated by simulation in `tests/test_threshold_methods.py`). Same samples and protocol as above:
+
+| model | strategy | FPR | recall | F1 | worst day | paired change in FPR vs fixed | paired change in recall |
+|---|---|---|---|---|---|---|---|
+| Logistic regression | conf80 | 1.2% | 0.27 | 0.40 | 2.3% | -0.7 points [-1.3, -0.3] | -0.047 [-0.101, -0.006] |
+| | conf90 | 1.0% | 0.24 | 0.36 | 1.8% | -1.0 points [-1.8, -0.3] | -0.082 [-0.136, -0.041] |
+| LSTM classifier | conf80 | 5.9% | 0.27 | 0.31 | 14.5% | -2.0 points [-2.9, -1.1] | -0.026 [-0.050, -0.007] |
+| | conf90 | 5.1% | 0.26 | 0.31 | 12.1% | -2.7 points [-4.1, -1.5] | -0.042 [-0.077, -0.012] |
+| World model | conf80 | 5.3% | 0.23 | 0.28 | 12.1% | -1.2 points [-1.9, -0.6] | -0.032 [-0.062, -0.007] |
+| | conf90 | 4.3% | 0.22 | 0.28 | 10.2% | -2.2 points [-3.6, -1.0] | -0.044 [-0.085, -0.012] |
+
+It lowers the neural models' false alarms significantly and costs a few points of recall, but it removes only part of the excess and leaves the worst day at 10% to 14%; delayed feedback does better. For logistic regression it is over-cautious (1.0% to 1.2% against a 2% target) and just loses recall.
+
+**Why the drift happens at all** is analysed in [DRIFT_CAUSES.md](DRIFT_CAUSES.md): not attack echoes, not early-stopping contamination, not a general day shift; a small heavy-tailed calibration sample and unusual-volume windows are the real contributors.
 
 ## Sensitivity of the feedback method (nothing tuned; every cell reported)
 

@@ -125,7 +125,31 @@ def oracle_alarms(sv, yv, st, y_test, seg_test, **_):
     return alarms
 
 
-STRATEGIES = {"fixed": fixed_alarms, "recenter": recenter_alarms, "feedback": feedback_alarms, "oracle (reference)": oracle_alarms}
+def finite_sample_alarms(sv, yv, st, delta=0.9, **_):
+    """Conservative threshold: the m-th largest benign validation score, with m the largest rank for which the
+    true exceedance probability (Beta(m, n-m+1) for the m-th largest of n i.i.d. scores) is <= FAR with
+    probability >= delta. delta=0.5 is roughly the usual quantile; larger delta trades recall for stability."""
+    from scipy.stats import beta
+    b = np.sort(sv[yv == 0])[::-1]
+    n = len(b)
+    m_best = 1
+    for m in range(1, n + 1):
+        if beta.cdf(FAR, m, n - m + 1) >= delta:
+            m_best = m
+        else:
+            break
+    return st > b[m_best - 1]
+
+
+def conf80_alarms(**kw):
+    return finite_sample_alarms(delta=0.8, **kw)
+
+
+def conf90_alarms(**kw):
+    return finite_sample_alarms(delta=0.9, **kw)
+
+
+STRATEGIES = {"fixed": fixed_alarms, "recenter": recenter_alarms, "feedback": feedback_alarms, "conf80": conf80_alarms, "conf90": conf90_alarms, "oracle (reference)": oracle_alarms}
 
 
 def metrics(alarm, y, seg, blocks=None):
@@ -179,7 +203,7 @@ def evaluate(folds):
                 "precision": avg("precision"), "f1": avg("f1"),
                 "fpr_by_day": day, "fpr_day_mad": avg("fpr_day_mad"), "fpr_day_max": avg("fpr_day_max")}
         # paired bootstrap, same resampled blocks: feedback minus fixed (and recenter minus fixed)
-        for other in ("feedback", "recenter"):
+        for other in ("feedback", "recenter", "conf80", "conf90"):
             d = boots[other] - boots["fixed"]
             out["paired_feedback_minus_fixed"].setdefault(model, {})[other] = {
                 "fpr_diff": float(d[:, 0].mean()), "fpr_diff_ci95": np.percentile(d[:, 0], [2.5, 97.5]).tolist(),
