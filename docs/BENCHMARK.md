@@ -68,7 +68,7 @@ Cells: PR-AUC / recall / FPR at the validation-calibrated threshold.
 ## Caveats
 
 - 41 episodes and 5 capture days: wide CIs; the ranking of the two logistic regressions and the LSTM is not reliable.
-- The world model was not tuned beyond the Phase 2 default configuration, and neither were the baselines; a better-regularised or differently weighted model (for example a lower dynamics-loss weight) might close part of the gap. I did not test that, so the cause of the gap is a hypothesis: the likely candidate is overfitting of a 100k-parameter model on about 1,500 overlapping samples.
+- The benchmark used the Phase 2 default configuration. A follow-up sensitivity analysis ([OVERFITTING_TEST.md](OVERFITTING_TEST.md)) tested whether overfitting explains the gap: shrinking the world model from 100,702 to 2,542 parameters, adding regularisation, or lowering the dynamics-loss weight did **not** close it (test PR-AUC stayed at 0.20-0.25 against 0.45 for logistic regression). A second experiment tested the training objective: training the infiltration head only on real history steps (not on imagined future states), or with no rollout at all, raised the world model's test PR-AUC from 0.22 to 0.30-0.33 (and from 0.20 to 0.33-0.38 at 13k parameters), close to the plain LSTM classifier but still not above logistic regression (0.45; differences not significant). The shipped weights and the numbers in this document still use the original objective.
 - Early stopping used the validation infiltration loss for both neural models.
 - Stage prediction is not benchmarked (the label set cannot support it, see `docs/WORLD_MODEL.md`).
 - Thresholds are per fold; the realised FPRs above show they are not stable across days.
