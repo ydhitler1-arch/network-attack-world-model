@@ -7,7 +7,7 @@ This project began as an entry for **SIH 2026 PS 26153: AI-based Network Attack 
 - [SLIDES.md](SLIDES.md): 5-slide outline; [SIH_PS26153_deck.pptx](SIH_PS26153_deck.pptx): the built deck
 - [DEMO_SCRIPT.md](DEMO_SCRIPT.md): 2-minute demo script
 
-> **Note.** The deck ([SIH_PS26153_deck.pptx](SIH_PS26153_deck.pptx)) was rebuilt with the current numbers. The slide outline ([SLIDES.md](SLIDES.md)) and the demo script ([DEMO_SCRIPT.md](DEMO_SCRIPT.md)) were written before the world model's training objective was revised, so their figures (for example world-model PR-AUC 0.22, 3 false alarms, probability drop 0.98 to about 0.05) reflect the original model; so does the status table below. Current numbers are in the top-level README and `docs/BENCHMARK.md`; the original results are in `models/v1_original_objective/`.
+> **Note.** The deck ([SIH_PS26153_deck.pptx](SIH_PS26153_deck.pptx)) was rebuilt with the current numbers, and the demo script ([DEMO_SCRIPT.md](DEMO_SCRIPT.md)) was refreshed for the retrained model (v1.0.0). The slide outline ([SLIDES.md](SLIDES.md)) and the status table below were written before the world model's training objective was revised, so their figures (for example world-model PR-AUC 0.22) reflect the original model. Current numbers are in the top-level README and `docs/BENCHMARK.md`; the original results are in `models/v1_original_objective/`.
 
 ## Status against the problem statement
 
