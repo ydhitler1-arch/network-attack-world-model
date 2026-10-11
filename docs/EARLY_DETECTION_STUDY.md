@@ -29,7 +29,7 @@ Task: predict whether an attack begins within the next 6 minutes. Result: at cha
 - Timestamps are minute-resolution, so any sub-minute lead-up is invisible.
 - CIC-IDS2017 attacks were launched by script at scheduled times, without a realistic reconnaissance phase.
 
-A synthetic dataset with a planted reconnaissance ramp (`src/make_synthetic_data.py`) is trivially separable. It only demonstrates the method and says nothing about real forecasting ability. **I do not claim forecasting works.**
+A synthetic dataset with a planted reconnaissance ramp (`src/legacy/make_synthetic_data.py`) is trivially separable. It only demonstrates the method and says nothing about real forecasting ability. **I do not claim forecasting works.**
 
 ## 4. Detection results
 

@@ -13,6 +13,7 @@ import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
 
 import benchmark as B  # noqa: E402
+import threshold_drift as TD  # noqa: E402
 from state import STATE_COLUMNS, StateScaler  # noqa: E402
 from world_model import _norm_label  # noqa: E402
 
@@ -121,6 +122,35 @@ def test_threshold_calibration_uses_only_benign_validation_scores():
     s2[y == 1] += 100.0  # attack scores must not move the threshold
     assert t1 == B.calibrate(s2, y)
     assert abs(t1 - np.quantile(s[y == 0], 1 - B.FAR_TARGET)) < 1e-12
+
+
+def test_adaptive_thresholds_never_look_ahead():
+    """Re-centring may use only past scores; feedback may use a label only `delay` windows after the window."""
+    rng = np.random.default_rng(2)
+    n = 300
+    s = rng.normal(size=n)
+    y = (rng.random(n) < 0.15).astype(int)
+    sv, yv = rng.normal(size=200), (rng.random(200) < 0.15).astype(int)
+    seg = np.zeros(n, int)
+
+    # re-centring: changing score i must not change the median used at any t <= i
+    m0 = TD.trailing_median(s, 0.0)
+    for i in (25, 100, 250):
+        s2 = s.copy()
+        s2[i] += 50.0
+        assert np.array_equal(m0[: i + 1], TD.trailing_median(s2, 0.0)[: i + 1]), "median used a current or future score"
+
+    # feedback: flipping the label of window j can only change alarms at i >= j + delay
+    base = TD.feedback_alarms(sv=sv, yv=yv, st=s, y_test=y, eta=0.1, delay=TD.D)
+    for j in (10, 120, 200):
+        y2 = y.copy()
+        y2[j] = 1 - y2[j]
+        alt = TD.feedback_alarms(sv=sv, yv=yv, st=s, y_test=y2, eta=0.1, delay=TD.D)
+        assert np.array_equal(base[: j + TD.D], alt[: j + TD.D]), f"alarms before window {j + TD.D} used the label of window {j}"
+    # labels of the final `delay` windows can never be used at all
+    y3 = y.copy()
+    y3[-TD.D:] = 1 - y3[-TD.D:]
+    assert np.array_equal(base, TD.feedback_alarms(sv=sv, yv=yv, st=s, y_test=y3, eta=0.1, delay=TD.D))
 
 
 def test_the_check_would_catch_missing_purge():

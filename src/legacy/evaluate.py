@@ -33,6 +33,9 @@ import pandas as pd
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import average_precision_score, roc_auc_score, roc_curve
 
+import sys as _sys
+from pathlib import Path as _Path
+_sys.path.insert(0, str(_Path(__file__).resolve().parent.parent))  # core modules (features.py ...) live in src/
 from features import FEATURE_COLUMNS
 
 
