@@ -107,6 +107,10 @@ def test_scaler_ignores_rows_outside_its_mask():
     fit_mask = tr & (STATE["window_is_attack"].to_numpy() == 0)
     a = StateScaler(STATE_COLUMNS).fit(STATE, fit_mask)
     poisoned = STATE.copy()
+    # Cast to float first: pandas >= 3.0 no longer silently upcasts an
+    # int64 column when a float value is assigned into it via .loc, and
+    # raises instead. The poisoning itself only cares about the values.
+    poisoned[STATE_COLUMNS] = poisoned[STATE_COLUMNS].astype(float)
     poisoned.loc[~fit_mask, STATE_COLUMNS] = poisoned.loc[~fit_mask, STATE_COLUMNS].to_numpy() + rng.normal(1e6, 1, (int((~fit_mask).sum()), len(STATE_COLUMNS)))
     b = StateScaler(STATE_COLUMNS).fit(poisoned, fit_mask)
     assert np.allclose(a.mean_, b.mean_) and np.allclose(a.std_, b.std_), "scaler statistics depend on unmasked rows"
