@@ -21,7 +21,7 @@ flows -> 60s windows (13 features, log1p) -> last-N-minute sequences -> models -
 - src/state.py (43-feature state), src/pcap_to_flows.py (Scapy), src/world_model.py + wm_train.py (LSTM world model, K=6 rollout, configs/world_model.json),
   src/benchmark.py (blocked CV + leave-one-type-out), src/explain.py + inference.py (SHAP, host counterfactuals), dashboard/demo.py (offline demo).
 - Docs: docs/ARCHITECTURE.pdf (2 pages), BENCHMARK.md, WORLD_MODEL.md, EXPLAINABILITY.md, FEATURES.md, BLOG.md (narrative write-up), EARLY_DETECTION_STUDY.md; docs/hackathon/ has the SIH slides and demo script.
-- Benchmark result (honest): world model PR-AUC 0.22 < LSTM classifier 0.35 < logistic regression 0.45 for detection; no forecasting skill; weak on unseen attack types.
+- Benchmark result (honest, revised objective): world model PR-AUC 0.30 < LSTM classifier 0.35 < logistic regression 0.45 for detection (differences not significant); no established forecasting skill; weak on unseen attack types. Original objective scored 0.22 (significantly worse); see docs/OVERFITTING_TEST.md and models/v1_original_objective/.
   The PS asks to show the temporal model improves on LR: NOT met on CIC-IDS2017.
 - Earlier steps (features.py -> detect_eval.py --lstm -> dashboard/app.py -> docs/EARLY_DETECTION_STUDY.md) are finished.
 

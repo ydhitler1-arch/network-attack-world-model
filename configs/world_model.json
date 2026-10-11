@@ -14,14 +14,35 @@
   "clip_z": 8.0,
   "pos_weight_cap": 5.0,
   "use_dynamics": true,
-  "loss_weights": {"dynamics": 1.0, "infiltration": 1.0, "stage": 0.5},
+  "rollout_task_loss": false,
+  "loss_weights": {
+    "dynamics": 1.0,
+    "infiltration": 1.0,
+    "stage": 0.5
+  },
   "split": {
     "note": "segments are capture days: 0=Mon (benign only), 1=Tue (Patator), 2=Wed (DoS), 3=Thu (web attacks), 4=Fri (Bot, DDoS, PortScan)",
-    "train_segments": [0, 1, 2],
-    "val_segments": [3],
-    "test_segments": [4]
+    "train_segments": [
+      0,
+      1,
+      2
+    ],
+    "val_segments": [
+      3
+    ],
+    "test_segments": [
+      4
+    ]
   },
-  "stages": ["Benign", "Reconnaissance", "Initial Access", "Lateral Movement", "Command & Control", "Exfiltration", "Impact (outside the 5 stages)"],
+  "stages": [
+    "Benign",
+    "Reconnaissance",
+    "Initial Access",
+    "Lateral Movement",
+    "Command & Control",
+    "Exfiltration",
+    "Impact (outside the 5 stages)"
+  ],
   "label_to_stage": {
     "BENIGN": "Benign",
     "PortScan": "Reconnaissance",

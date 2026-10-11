@@ -124,7 +124,7 @@ flagged = np.where((p0 >= thr) & valid)[0]
 
 st.warning(
     "Research prototype. On CIC-IDS2017 the benchmark found that this world model does **not** beat a plain "
-    "logistic-regression detector (PR-AUC 0.22 vs 0.45), forecasting minutes ahead showed no reliable skill, and "
+    "logistic-regression detector (PR-AUC 0.30 vs 0.45, not a significant difference), forecasting minutes ahead showed no reliable skill, and "
     "unseen attack types are mostly missed. "
     + ("The CIC-IDS2017 sample is **in-sample** for the demo model, so its scores look better than they would on new traffic. "
        if source == "csv_sample" else "")
