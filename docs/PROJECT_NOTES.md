@@ -1,8 +1,7 @@
 # Network Attack Early Detection (CIC-IDS2017) - project context
 
-This repo is the SIH 2026 submission for PS 26153 (AI-based network attack forecasting, NTRO). READ SIH_PS26153_REQUIREMENTS.md
-for the full checklist (world model, K-step rollout, MITRE stage mapping, SHAP, offline demo, LR baseline, deliverables).
-All checklist items are implemented; benchmark shows the world model does NOT beat the LR baseline (see below).
+This repo began as an SIH 2026 entry for PS 26153 (AI-based network attack forecasting, NTRO) but was NOT submitted; it is now a personal research/portfolio project.
+Hackathon material (requirements checklist, audit, slides, demo script) is in docs/hackathon/. All checklist items were implemented; benchmark shows the world model does NOT beat the LR baseline (see below).
 Owner: Devan (cybersecurity student). Python 3.13 on Windows, torch already installed.
 
 ## Pipeline
@@ -21,13 +20,13 @@ flows -> 60s windows (13 features, log1p) -> last-N-minute sequences -> models -
 ## Submission build (Phases 0-6 done; see README.md for the status table and commands)
 - src/state.py (43-feature state), src/pcap_to_flows.py (Scapy), src/world_model.py + wm_train.py (LSTM world model, K=6 rollout, configs/world_model.json),
   src/benchmark.py (blocked CV + leave-one-type-out), src/explain.py + inference.py (SHAP, host counterfactuals), dashboard/demo.py (offline demo).
-- Docs: docs/ARCHITECTURE.pdf (2 pages), BENCHMARK.md, WORLD_MODEL.md, EXPLAINABILITY.md, FEATURES.md, SLIDES.md, DEMO_SCRIPT.md.
+- Docs: docs/ARCHITECTURE.pdf (2 pages), BENCHMARK.md, WORLD_MODEL.md, EXPLAINABILITY.md, FEATURES.md, BLOG.md (narrative write-up), EARLY_DETECTION_STUDY.md; docs/hackathon/ has the SIH slides and demo script.
 - Benchmark result (honest): world model PR-AUC 0.22 < LSTM classifier 0.35 < logistic regression 0.45 for detection; no forecasting skill; weak on unseen attack types.
   The PS asks to show the temporal model improves on LR: NOT met on CIC-IDS2017.
-- Earlier steps (features.py -> detect_eval.py --lstm -> dashboard/app.py -> WRITEUP.md) are finished.
+- Earlier steps (features.py -> detect_eval.py --lstm -> dashboard/app.py -> docs/EARLY_DETECTION_STUDY.md) are finished.
 
 ## Still open
-- Recorded demo video, built 5-slide deck (outline in docs/SLIDES.md). Repo is public: https://github.com/ydhitler1-arch/network-attack-world-model (MIT).
+- Portfolio polish done (README, screenshots, docs/BLOG.md). Repo is public: https://github.com/ydhitler1-arch/network-attack-world-model (MIT).
 - Optional: CIC-IDS2018 / CTU-13 (finer time resolution, multi-stage), stronger regularisation of the world model.
 
 ## Gotchas
