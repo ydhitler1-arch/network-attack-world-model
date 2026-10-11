@@ -1,0 +1,31 @@
+# Keeps CI and the pinned dependencies from quietly rotting. Dependabot opens pull requests; CI (lint, tests,
+# Docker build) decides whether each one is safe to merge.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: "ci"
+
+  - package-ecosystem: pip
+    directory: "/"
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 3
+    groups:
+      python-dependencies:
+        patterns: ["*"]
+    commit-message:
+      prefix: "deps"
+    # Note: CI installs CPU-only PyTorch from the PyTorch CPU index (see .github/workflows/ci.yml and the
+    # Dockerfile). A torch bump proposed from PyPI may not exist there yet, in which case that pull request
+    # will fail CI and should wait.
+
+  - package-ecosystem: docker
+    directory: "/"
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: "docker"
