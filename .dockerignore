@@ -1,0 +1,18 @@
+# keep the image small: the demo needs the code, weights, data/state_v1.parquet and data/sample/ only
+.git
+.github
+.claude
+.venv
+__pycache__
+*.pyc
+data/raw
+data/cleaned_unused
+data/synthetic
+data/windows*.parquet
+data/state_v1_scaled.parquet
+models/bench_*.pkl
+models/v1_original_objective
+models/archive
+docs
+*.pptx
+*.pdf

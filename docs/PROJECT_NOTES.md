@@ -8,8 +8,8 @@ Owner: Devan (cybersecurity student). Python 3.13 on Windows, torch already inst
 flows -> 60s windows (13 features, log1p) -> last-N-minute sequences -> models -> blocked CV with purge -> detection delay at fixed false-alarm rate.
 - src/data_loader.py  loads CIC-IDS2017 "GeneratedLabelledFlows" CSVs (cp1252, per-file day-first timestamps, hours 1-7 = PM, blank rows dropped)
 - src/features.py     60s windows + segments at overnight gaps; usage: python src/features.py data/raw 60
-- src/evaluate.py     forecasting experiment (+ --detect, --by-type, --cv-episodes)
-- src/detect_eval.py  early-detection eval: anomaly heuristic, logistic regression, XGBoost (TreeSHAP), optional LSTM (--lstm)
+- src/legacy/evaluate.py     forecasting experiment (+ --detect, --by-type, --cv-episodes)
+- src/legacy/detect_eval.py  early-detection eval: anomaly heuristic, logistic regression, XGBoost (TreeSHAP), optional LSTM (--lstm)
 - dashboard/app.py    Streamlit; reads models/detection_oof.parquet (streamlit run dashboard/app.py)
 
 ## Findings so far (data/windows_v1_8feat.parquet = old 8-feature windows)
@@ -23,7 +23,7 @@ flows -> 60s windows (13 features, log1p) -> last-N-minute sequences -> models -
 - Docs: docs/ARCHITECTURE.pdf (2 pages), BENCHMARK.md, WORLD_MODEL.md, EXPLAINABILITY.md, FEATURES.md, BLOG.md (narrative write-up), EARLY_DETECTION_STUDY.md; docs/hackathon/ has the SIH slides and demo script.
 - Benchmark result (honest, revised objective): world model PR-AUC 0.30 < LSTM classifier 0.35 < logistic regression 0.45 for detection (differences not significant); no established forecasting skill; weak on unseen attack types. Original objective scored 0.22 (significantly worse); see docs/OVERFITTING_TEST.md and models/v1_original_objective/.
   The PS asks to show the temporal model improves on LR: NOT met on CIC-IDS2017.
-- Earlier steps (features.py -> detect_eval.py --lstm -> dashboard/app.py -> docs/EARLY_DETECTION_STUDY.md) are finished.
+- Earlier steps (features.py -> legacy/detect_eval.py --lstm -> dashboard/app.py -> docs/EARLY_DETECTION_STUDY.md) are finished.
 
 ## Still open
 - Portfolio polish done (README, screenshots, docs/BLOG.md). Repo is public: https://github.com/ydhitler1-arch/network-attack-world-model (MIT).
@@ -32,5 +32,5 @@ flows -> 60s windows (13 features, log1p) -> last-N-minute sequences -> models -
 ## Gotchas
 - Run steps as separate commands; if features.py fails, later steps silently use stale data/windows.parquet.
 - data/raw must contain only the timestamped GeneratedLabelledFlows CSVs (NOT the Kaggle "cleaned" file: no timestamps/IPs).
-- Synthetic data (data/synthetic, src/make_synthetic_data.py) has a planted recon ramp and is trivially separable: methodology demo only.
+- Synthetic data (data/synthetic, src/legacy/make_synthetic_data.py) has a planted recon ramp and is trivially separable: methodology demo only.
 - Don't claim forecasting works; results on real data say otherwise.

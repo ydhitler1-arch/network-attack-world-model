@@ -1,7 +1,7 @@
 """
 Streamlit dashboard: early-detection risk timeline on real network traffic.
 
-Reads the out-of-fold scores written by `python src/detect_eval.py`, so every score
+Reads the out-of-fold scores written by `python src/legacy/detect_eval.py`, so every score
 shown was produced by a model that never trained on that part of the timeline.
 
 Run:  streamlit run dashboard/app.py
@@ -27,7 +27,7 @@ st.caption(
 )
 
 if not OOF.exists():
-    st.warning("No results yet. Run `python src/detect_eval.py` first.")
+    st.warning("No results yet. Run `python src/legacy/detect_eval.py` first.")
     st.stop()
 
 df = pd.read_parquet(OOF).sort_values("window_idx").reset_index(drop=True)

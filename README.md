@@ -23,7 +23,7 @@ An end-to-end, explainable network-intrusion pipeline, and an honest test of a q
 
 ## Results
 
-Blocked 5-fold cross-validation with a purge gap, scaler refit per fold, thresholds calibrated on a validation fold for a 2% false-alarm target, 3 seeds, block-bootstrap confidence intervals. Detecting the current window (2,095 test samples, 11% attack):
+Blocked 5-fold cross-validation with a purge gap, scaler refit per fold, thresholds calibrated on a validation fold for a 2% false-alarm target (the realised rate drifts between days, see below), 3 seeds, block-bootstrap confidence intervals. Detecting the current window (2,095 test samples, 11% attack):
 
 | model | PR-AUC [95% CI] | precision | recall | F1 | false-alarm rate |
 |---|---|---|---|---|---|
@@ -34,6 +34,7 @@ Blocked 5-fold cross-validation with a purge gap, scaler refit per fold, thresho
 - **No established forecasting skill.** Predicting 3 minutes ahead, every model scores PR-AUC 0.18 to 0.27 against a base rate of 0.11; the world model is highest, but 11 of 12 paired comparisons are not significant. Attacks in this dataset start abruptly, with no ramp-up to learn from.
 - **Weak on unseen attacks.** Leave-one-attack-type-out mean recall: logistic regression 0.36, LSTM 0.25, world model 0.21. Bot, DoS GoldenEye and DoS Hulk are missed by every model.
 - **Learned dynamics barely beat a straight line.** A per-feature linear AR(1) predictor ties the LSTM at one step ahead and beats it further out.
+- **Thresholds drift for the neural models.** A threshold set for 2% false alarms gave 6.5% to 7.8% on test days (up to 17% on one day) for the LSTM models, but 2.0% for logistic regression. Label-free re-centring does not fix it; delayed analyst feedback on benign windows roughly halves the excess without losing recall ([docs/THRESHOLD_DRIFT.md](docs/THRESHOLD_DRIFT.md)).
 - **Explanations hold up.** Deleting the top 3 SHAP features lowers the score by 2.14 logits against about 0 for random features.
 
 The world model's training objective was revised after a first run found it significantly worse than logistic regression (PR-AUC 0.22); the first-run results are kept in `models/v1_original_objective/` and the reasoning is in [docs/OVERFITTING_TEST.md](docs/OVERFITTING_TEST.md).
@@ -59,6 +60,13 @@ pip install -r requirements.txt
 streamlit run dashboard/demo.py
 ```
 
+Or with Docker (no Python setup; CI builds and smoke-tests this image):
+
+```bash
+docker build -t attack-demo .
+docker run --rm -p 8501:8501 attack-demo     # then open http://localhost:8501
+```
+
 The repository ships the trained weights and two samples in `data/sample/` (a 55-minute slice of real CIC-IDS2017 traffic and a synthetic PCAP). Pick a sample in the sidebar, or upload your own CSV (CICFlowMeter layout) or PCAP. Note that the CIC-IDS2017 sample is in-sample for the shipped model and the PCAP sample is synthetic, and the model does not flag the scan in it (it flags a later connection burst instead).
 
 ### Reproduce everything
@@ -79,7 +87,7 @@ python -W ignore src/explain.py                  # SHAP table and validation (~4
 3. Tests (also run on every push by GitHub Actions):
 
 ```bash
-python -W ignore tests/test_leakage.py     # no train/test leakage in the purged blocked CV and leave-one-attack-type-out splits
+python -W ignore tests/test_leakage.py     # no train/test leakage in the CV splits, and no look-ahead in the adaptive thresholds
 python -W ignore tests/test_phase1.py      # PCAP to state vector
 python -W ignore tests/test_phase5.py      # demo pipeline on the samples
 python -W ignore tests/test_demo_app.py    # Streamlit demo smoke test
@@ -94,13 +102,13 @@ Seeds are fixed (42) and training is deterministic on CPU: repeated runs gave id
 | `src/data_loader.py`, `src/state.py` | CIC-IDS2017 loader, 43-feature state vector, scaler |
 | `src/pcap_to_flows.py` | PCAP to flows with Scapy (adds TTL, fragmentation, retransmission columns) |
 | `src/world_model.py`, `src/wm_train.py` | LSTM world model, rollout, training and sanity evaluation |
-| `src/benchmark.py` | blocked CV with purge, leave-one-attack-type-out, bootstrap CIs |
+| `src/benchmark.py`, `src/threshold_drift.py` | blocked CV with purge, leave-one-attack-type-out, bootstrap CIs; threshold-drift experiment |
 | `src/explain.py`, `src/inference.py` | SHAP, counterfactual host analysis, demo pipeline |
 | `dashboard/demo.py` | the offline Streamlit demo (`dashboard/app.py` is an older replay dashboard) |
 | `configs/`, `models/`, `data/sample/` | config, trained weights and results, demo inputs |
 | `tests/` | leakage, PCAP, demo-pipeline and demo smoke tests |
 | `docs/` | architecture, features, world model, benchmark, explainability, blog write-up, early-detection study |
-| `src/features.py`, `evaluate.py`, `detect_eval.py`, `train.py`, `model.py`, `sequence_builder.py`, `make_synthetic_data.py` | the earlier pipeline: forecasting at chance, reframed as early detection ([docs/EARLY_DETECTION_STUDY.md](docs/EARLY_DETECTION_STUDY.md)); the synthetic data has a planted ramp and is a methodology demo only |
+| `src/features.py`, `src/legacy/` | the earlier pipeline: forecasting at chance, reframed as early detection ([docs/EARLY_DETECTION_STUDY.md](docs/EARLY_DETECTION_STUDY.md), [src/legacy/README.md](src/legacy/README.md)); the synthetic data has a planted ramp and is a methodology demo only |
 
 ## Limitations and next ideas
 

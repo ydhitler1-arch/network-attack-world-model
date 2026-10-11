@@ -43,3 +43,28 @@ jobs:
 
       - name: Streamlit demo smoke test
         run: python -W ignore tests/test_demo_app.py
+
+  docker:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build the demo image
+        run: docker build -t attack-demo .
+
+      - name: Run the tests inside the image
+        run: |
+          docker run --rm attack-demo python -W ignore tests/test_leakage.py
+          docker run --rm attack-demo python -W ignore tests/test_phase5.py
+
+      - name: The container serves the demo
+        run: |
+          docker run -d --name demo -p 8501:8501 attack-demo
+          for i in $(seq 1 60); do
+            curl -fs http://localhost:8501/_stcore/health && break
+            sleep 2
+          done
+          curl -fs http://localhost:8501/_stcore/health
+          curl -fs http://localhost:8501/ | grep -qi streamlit
+          docker logs demo | tail -20
