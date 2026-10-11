@@ -32,7 +32,6 @@ import torch
 from sklearn.linear_model import LogisticRegression
 
 sys.path.insert(0, str(Path(__file__).parent))
-from state import STATE_COLUMNS  # noqa: E402
 from world_model import history_index, load_model  # noqa: E402
 
 
@@ -237,7 +236,7 @@ def main():
     # ---- cross-check against the shap library's GradientExplainer on a few windows
     try:
         import shap
-        L, K = ck["cfg"]["lookback"], res["K"]
+        L = ck["cfg"]["lookback"]
 
         class W(torch.nn.Module):
             def __init__(s):

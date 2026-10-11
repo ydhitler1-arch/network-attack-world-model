@@ -131,7 +131,6 @@ def test_adaptive_thresholds_never_look_ahead():
     s = rng.normal(size=n)
     y = (rng.random(n) < 0.15).astype(int)
     sv, yv = rng.normal(size=200), (rng.random(200) < 0.15).astype(int)
-    seg = np.zeros(n, int)
 
     # re-centring: changing score i must not change the median used at any t <= i
     m0 = TD.trailing_median(s, 0.0)

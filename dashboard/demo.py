@@ -55,7 +55,6 @@ def run_analysis(source: str, name: str, data: bytes | None, ws: float, max_pack
 def flagged_table(_an, key: str, rows: tuple):
     rows = np.array(rows)
     ex = inf.explain_windows(_an, rows, n_samples=64)
-    raw = _an.state[STATE_COLUMNS].to_numpy()
     out = []
     for i, t in enumerate(rows):
         top = np.argsort(-np.abs(ex["phi_feat"][i, 0]))[:3]

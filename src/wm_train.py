@@ -165,7 +165,6 @@ def prepare(cfg, exclude_types=()):
 
 def fit(cfg, state, seg, Y, S, banned, train_segs, val_segs, epochs=None, log=None, verbose=True):
     L, K = cfg["lookback"], cfg["horizon"]
-    span = L + K if cfg.get("use_dynamics", True) else L
     Kuse = K if cfg.get("use_dynamics", True) else 0
     cols = STATE_COLUMNS
     tr_starts = make_starts(seg, L + Kuse, train_segs, banned)

@@ -34,7 +34,7 @@ Blocked 5-fold cross-validation with a purge gap, scaler refit per fold, thresho
 - **No established forecasting skill.** Predicting 3 minutes ahead, every model scores PR-AUC 0.18 to 0.27 against a base rate of 0.11; the world model is highest, but 11 of 12 paired comparisons are not significant. Attacks in this dataset start abruptly, with no ramp-up to learn from.
 - **Weak on unseen attacks.** Leave-one-attack-type-out mean recall: logistic regression 0.36, LSTM 0.25, world model 0.21. Bot, DoS GoldenEye and DoS Hulk are missed by every model.
 - **Learned dynamics barely beat a straight line.** A per-feature linear AR(1) predictor ties the LSTM at one step ahead and beats it further out.
-- **Thresholds drift for the neural models.** A threshold set for 2% false alarms gave 6.5% to 7.8% on test days (up to 17% on one day) for the LSTM models, but 2.0% for logistic regression. Label-free re-centring does not fix it; delayed analyst feedback on benign windows roughly halves the excess without losing recall ([docs/THRESHOLD_DRIFT.md](docs/THRESHOLD_DRIFT.md)). Tracing the causes ([docs/DRIFT_CAUSES.md](docs/DRIFT_CAUSES.md)) rejected three obvious explanations (day shift in benign traffic, attack echoes in the lookback, early-stopping contamination) and found two real ones: a calibration set with only about 6 tail windows, and unusual-volume minutes that the neural models score extremely.
+- **Thresholds drift for the neural models.** A threshold set for 2% false alarms gave 6.5% to 7.8% on test days (up to 17% on one day) for the LSTM models, but 2.0% for logistic regression. Label-free re-centring does not fix it; delayed analyst feedback on benign windows roughly halves the excess without losing recall ([docs/THRESHOLD_DRIFT.md](docs/THRESHOLD_DRIFT.md)). Tracing the causes ([docs/DRIFT_CAUSES.md](docs/DRIFT_CAUSES.md)) rejected three obvious explanations (day shift in benign traffic, attack echoes in the lookback, early-stopping contamination) and found two real ones: a calibration set with only about 6 tail windows, and unusual-volume minutes that the neural models score extremely (clipping inputs or dropping the volume features only dents it: [docs/VOLUME_OOD.md](docs/VOLUME_OOD.md)).
 - **The simple model is hard to beat honestly.** Tuned and L1 logistic regression, interactions, XGBoost, extra-trees and ensembles all scored below the plain logistic regression under a protocol that selects on one validation half and calibrates on the other; selection on a small validation set picked models that were worse on test. A volume-conditional threshold gave a consistent but not significant recall gain at matched false-alarm rates ([docs/IMPROVING_THE_BASELINE.md](docs/IMPROVING_THE_BASELINE.md)).
 - **Explanations hold up.** Deleting the top 3 SHAP features lowers the score by 2.14 logits against about 0 for random features.
 
@@ -83,6 +83,7 @@ python -W ignore src/benchmark.py --part cv --seeds 3     # blocked CV vs baseli
 python -W ignore src/benchmark.py --part loto             # leave-one-attack-type-out (~6 min)
 python -W ignore src/benchmark.py --part report           # metrics + bootstrap CIs
 python -W ignore src/explain.py                  # SHAP table and validation (~4 min)
+ruff check .                                     # lint (CI runs this too; pip install ruff)
 ```
 
 3. Tests (also run on every push by GitHub Actions):
@@ -109,7 +110,7 @@ Seeds are fixed (42) and training is deterministic on CPU: repeated runs gave id
 | `dashboard/demo.py` | the offline Streamlit demo (`dashboard/app.py` is an older replay dashboard) |
 | `configs/`, `models/`, `data/sample/` | config, trained weights and results, demo inputs |
 | `tests/` | leakage, PCAP, demo-pipeline and demo smoke tests |
-| `docs/` | architecture, features, world model, benchmark, explainability, blog write-up, early-detection study |
+| `CHANGELOG.md`, `docs/` | release notes; architecture, features, world model, benchmark, explainability, blog write-up, early-detection study |
 | `src/features.py`, `src/legacy/` | the earlier pipeline: forecasting at chance, reframed as early detection ([docs/EARLY_DETECTION_STUDY.md](docs/EARLY_DETECTION_STUDY.md), [src/legacy/README.md](src/legacy/README.md)); the synthetic data has a planted ramp and is a methodology demo only |
 
 ## Limitations and next ideas

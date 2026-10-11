@@ -9,7 +9,6 @@ Everything runs locally from files in models/ (no network access).
 
 from __future__ import annotations
 
-import json
 from pathlib import Path
 
 import numpy as np
@@ -17,7 +16,7 @@ import pandas as pd
 import torch
 
 from data_loader import load_csv_file
-from explain import explain_logreg, explain_world_model, fit_logreg
+from explain import explain_world_model, fit_logreg
 from state import STATE_COLUMNS, build_state
 from world_model import history_index, load_model, predict_timeline
 

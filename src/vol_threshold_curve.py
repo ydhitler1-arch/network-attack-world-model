@@ -38,7 +38,7 @@ def main():
     fc = state["flow_count"].to_numpy()
     n, L = len(state), base["lookback"]
     SP = L + 3
-    y_all, blocks, alarms = [], [], {"global": [], "vol2": []}   # alarms[method][alpha_index] -> list over (orientation) of pooled arrays
+    y_all, blocks = [], []
     per = {"global": [[] for _ in ALPHAS], "vol2": [[] for _ in ALPHAS]}
     for k in range(B.NFOLD):
         train_r, val_r, test_r = B.regions(n, k, None)
