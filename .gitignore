@@ -14,3 +14,5 @@ models/*.npz
 !data/state_v1.parquet
 # bulky intermediates
 models/bench_*.pkl
+
+.claude/
