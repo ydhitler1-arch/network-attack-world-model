@@ -1,0 +1,8 @@
+# Lint configuration (run in CI: .github/workflows/ci.yml, job "lint").
+# Syntax errors (E9) and pyflakes (F: unused imports and variables, undefined names, redefinitions).
+# Pure style rules (semicolons, lambda assignments, line length) are deliberately not enforced.
+target-version = "py313"
+extend-exclude = ["data", "models", ".venv", "docs/hackathon"]
+
+[lint]
+select = ["E9", "F"]

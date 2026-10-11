@@ -29,7 +29,7 @@ import numpy as np
 import pandas as pd
 from sklearn.ensemble import ExtraTreesClassifier
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import average_precision_score, roc_auc_score
+from sklearn.metrics import average_precision_score
 from sklearn.preprocessing import PolynomialFeatures, StandardScaler
 from xgboost import XGBClassifier
 
@@ -90,7 +90,6 @@ def main():
     SP = L + 3
     fc = state["flow_count"].to_numpy()
     calbias = pickle.load(open("models/bench_calbias_scores.pkl", "rb"))   # neural scores, same halves/orientations
-    names = None
     store = {}      # name -> {"test": [(R,N) per fold], "thr": [...], "es_pr": [...]}
     meta = {"y": [], "block": []}
     t_all = time.time()
@@ -128,7 +127,7 @@ def main():
                 picked[fam] = (cfgs[bi], prs[bi])
             for fam in fams:
                 cfg, pr = picked[fam]
-                s_es, s_cal, s_te = (scored[(fam, cfg)][es], scored[(fam, cfg)][cal], scored[(fam, cfg)][2])
+                s_cal, s_te = scored[(fam, cfg)][cal], scored[(fam, cfg)][2]
                 thr = B.calibrate(s_cal, y_h[cal])
                 d = store.setdefault(fam, {"test": [], "thr": [], "es_pr": [], "cfg": []})
                 d["test"].append((k, oi, s_te)); d["thr"].append((k, oi, np.full(len(s_te), thr))); d["es_pr"].append(pr); d["cfg"].append(cfg)
@@ -161,7 +160,7 @@ def main():
                                  ("ens_lr+xgb", [("lr_tuned", None), ("xgb_cur", None)])):
                 te_list, thr_list = [], []
                 for si in range(seeds if any(p[1] for p in parts) else 1):
-                    comp_es, comp_cal, comp_te = [], [], []
+                    comp_cal, comp_te = [], []
                     for nm, kind in parts:
                         trip = (nn[nm][0][si], nn[nm][1][si], nn[nm][2][si]) if kind else members[nm]
                         z = zscore_with(trip[1], y_h[cal])

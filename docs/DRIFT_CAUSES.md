@@ -12,7 +12,7 @@ No single cause. Three explanations were rejected or shown to be minor; two are 
 | **B. "False alarms" are attack echoes** (the 6-window lookback still contains the attack) | split benign windows by whether an attack is in the lookback | **Minor.** About 8% of benign windows; 11% to 15% of false alarms |
 | **C. The threshold is calibrated on the data used for early stopping** | controlled experiment: stop early on half the validation data, calibrate on the other half | **No.** Calibrating on unseen data is not better, slightly worse |
 | **D. The threshold rests on a handful of heavy-tailed benign scores** | measure tail size; realised rate per fold; conservative finite-sample thresholds | **Yes, a real contributor** |
-| **E. Unusual-volume windows get extreme scores from the neural models** | false-alarm rate by traffic-volume quintile | **Yes, where the false alarms concentrate**; not fixed by volume-binned thresholds |
+| **E. Unusual-volume windows get extreme scores from the neural models** | false-alarm rate by traffic-volume quintile | **Yes, where the false alarms concentrate**; not fixed by volume-binned thresholds, input clipping or dropping the volume features ([VOLUME_OOD.md](VOLUME_OOD.md)) |
 
 ## A. Does benign traffic look different on the bad days? Mostly no
 
@@ -72,7 +72,7 @@ False-alarm rate on benign windows by traffic volume (quintiles of flows per min
 | LSTM classifier, Thursday only | **40%** | 1% | 5% | 14% | 25% |
 | World model, Thursday only | **35%** | 0% | 3% | 10% | 20% |
 
-The neural models raise alarms on the quietest and the busiest benign minutes, and Thursday has many of them; logistic regression is only affected at the busy end. Separate thresholds per volume bin (2 or 3 bins) did **not** fix the neural models (8.4% false alarms, no better than a single threshold), so this is not just a calibration mismatch between volume levels, and the likely explanation is that those windows are out of distribution for the networks (rare in training, ratio features such as concentration shares are noisy when a window has few flows). I did not test that explanation, for example by clipping inputs more tightly, dropping volume-sensitive features, or training with volume augmentation.
+The neural models raise alarms on the quietest and the busiest benign minutes, and Thursday has many of them; logistic regression is only affected at the busy end. Separate thresholds per volume bin (2 or 3 bins) did **not** fix the neural models (8.4% false alarms, no better than a single threshold), so this is not just a calibration mismatch between volume levels, and the likely explanation is that those windows are out of distribution for the networks (rare in training, ratio features such as concentration shares are noisy when a window has few flows). A follow-up ([VOLUME_OOD.md](VOLUME_OOD.md)) tested it by clipping inputs more tightly and by dropping the volume-tracking features: clipping did nothing and dropping the features helped only a little, so extreme input values are not the main mechanism.
 
 ## What helps, ranked
 

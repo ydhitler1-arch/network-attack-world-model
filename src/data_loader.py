@@ -24,7 +24,6 @@ loader is deliberately tolerant and maps by fuzzy-matching known aliases.
 from __future__ import annotations
 
 import glob
-import os
 from pathlib import Path
 
 import pandas as pd
