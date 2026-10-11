@@ -59,8 +59,13 @@ def losses(out, x, y, st, cfg, pos_weight, stage_w):
     lw = cfg["loss_weights"]
     mu, lv = out["mu"][:, :-1], out["logvar"][:, :-1]
     nll = 0.5 * (lv + (x[:, 1:] - mu) ** 2 * torch.exp(-lv)).mean()
-    bce = F.binary_cross_entropy_with_logits(out["atk"], y, pos_weight=pos_weight)
-    ce = F.cross_entropy(out["stage"].reshape(-1, out["stage"].shape[-1]), st.reshape(-1), weight=stage_w)
+    atk, stg = out["atk"], out["stage"]
+    if cfg.get("use_dynamics", True) and not cfg.get("rollout_task_loss", True):
+        # infiltration/stage losses on the real history steps only (not on imagined rollout steps)
+        L = cfg["lookback"]
+        atk, stg, y, st = atk[:, :L], stg[:, :L], y[:, :L], st[:, :L]
+    bce = F.binary_cross_entropy_with_logits(atk, y, pos_weight=pos_weight)
+    ce = F.cross_entropy(stg.reshape(-1, stg.shape[-1]), st.reshape(-1), weight=stage_w)
     total = lw["infiltration"] * bce + lw["stage"] * ce
     if cfg.get("use_dynamics", True):
         total = total + lw["dynamics"] * nll

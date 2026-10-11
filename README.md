@@ -40,6 +40,7 @@ Full numbers and caveats: [docs/BENCHMARK.md](docs/BENCHMARK.md), [docs/WORLD_MO
 
 - **Evaluation design matters more than model choice.** Overlapping windows leak between train and test unless you purge around fold boundaries; thresholds calibrated on one day drift on the next (realised false-alarm rates 2% to 8% against a 2% target); a leave-one-attack-type-out test exposes weaknesses that average metrics hide.
 - **Compare against the dumbest baseline first.** A logistic regression and a linear AR(1) predictor beat the neural models. Without them the LSTM would have looked fine.
+- **Test your explanation for a failure, don't assume it.** I guessed the world model lost because it overfit. A capacity sweep showed that was mostly wrong; a follow-up with a prediction written down in advance pointed at the training objective instead, which recovers much of the gap ([docs/OVERFITTING_TEST.md](docs/OVERFITTING_TEST.md)).
 - **Explanations need validation too.** I checked SHAP against the library implementation, measured the completeness error (8.8%), and ran a deletion test instead of trusting the plots.
 - **Say what the data cannot support.** CIC-IDS2017 has no exfiltration label, DoS attacks fit none of the five ATT&CK stages used, and a CSV cannot provide TTL or retransmission features. These limits are documented rather than hidden.
 
