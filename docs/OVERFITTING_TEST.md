@@ -1,6 +1,8 @@
 # Does overfitting explain why the world model loses to logistic regression?
 
-Code: `src/overfit_test.py` (about 10 min). Results: `models/overfit_test.json`.
+Code: `src/overfit_test.py` (about 10 min). Results: `models/overfit_test.json`, `models/objective_test.json`.
+
+> **Update.** The labels "(shipped)" and "shipped objective" below refer to the original objective, which was the shipped one when these experiments ran. After the follow-up experiment the shipped model was retrained with the revised objective (`rollout_task_loss: false`) and the full benchmark was re-run (world model PR-AUC 0.299, which reproduces the 0.299 in the follow-up table). Original-objective results are kept in `models/v1_original_objective/`.
 
 ## Hypothesis and predictions
 
@@ -68,7 +70,7 @@ Prediction written down before running (`src/overfit_test.py objective`, results
 - No paired significance test was run between the fixed and the shipped variants; the intervals above overlap, so the improvement is consistent but not established as significant.
 - Fixing the objective brings the world model up to the classifier, **not above it**, and not above logistic regression (0.30 to 0.38 against 0.451; the differences are not significant, but logistic regression stays ahead on the point estimate).
 - Training without any rollout is the best world-model variant here, so the rollout in training did not help detection.
-- The shipped weights (`models/world_model*.pt`) and the benchmark numbers in the other docs still use the original objective; they have not been retrained.
+- The follow-up was run on the original shipped model's setup; afterwards the shipped weights were retrained with the revised objective and the benchmark re-run (see the update at the top).
 
 ## Caveats
 
