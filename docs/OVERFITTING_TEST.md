@@ -1,6 +1,6 @@
 # Does overfitting explain why the world model loses to logistic regression?
 
-Code: `src/overfit_test.py` (about 10 min). Results: `models/overfit_test.json`, `models/objective_test.json`.
+Code: `src/overfit_test.py` (about 10 min), `src/objective_significance.py` (about 5 min). Results: `models/overfit_test.json`, `models/objective_test.json`, `models/objective_significance.json`.
 
 > **Update.** The labels "(shipped)" and "shipped objective" below refer to the original objective, which was the shipped one when these experiments ran. After the follow-up experiment the shipped model was retrained with the revised objective (`rollout_task_loss: false`) and the full benchmark was re-run (world model PR-AUC 0.299, which reproduces the 0.299 in the follow-up table). Original-objective results are kept in `models/v1_original_objective/`.
 
@@ -67,7 +67,7 @@ Prediction written down before running (`src/overfit_test.py objective`, results
 **Reading it.** The prediction largely holds: removing the future-state task loss raises the world model from 0.22 and 0.20 to 0.30 and 0.33, and training with no rollout brings it to 0.33 and 0.38, close to the plain classifier at the same size (0.35 and 0.40). Validation PR-AUC rises in the same direction (0.342 to 0.383 at hidden 128). The effect is consistent in sign and size across both model sizes and both variants, so the training objective explains much of the earlier gap. Choosing by validation alone selects "real steps only, hidden 128" (test 0.299).
 
 **What it does not show.**
-- No paired significance test was run between the fixed and the shipped variants; the intervals above overlap, so the improvement is consistent but not established as significant.
+- Significance of the fix, tested separately: **Paired significance test** (`src/objective_significance.py`: the world model with the original and the revised objective, 5 seeds each, same blocked-CV samples, paired block bootstrap with 1,000 resamples). Revised minus original: PR-AUC **+0.085 [+0.002, +0.206]** at k=0 and **+0.054 [+0.009, +0.109]** at k=3; F1 +0.084 [-0.002, +0.196] at k=0 and +0.057 [+0.005, +0.118] at k=3. The revised objective had the higher PR-AUC in every one of the 5 seeds at both horizons, and was better in 97% to 100% of bootstrap resamples. Three of the four intervals exclude zero, two of them only narrowly (k=0 PR-AUC by 0.002, k=0 F1 just misses). So the improvement is consistent and probably real, but not overwhelming, and it is somewhat optimistic: the fix was chosen after seeing a poor result, on the same folds.
 - Fixing the objective brings the world model up to the classifier, **not above it**, and not above logistic regression (0.30 to 0.38 against 0.451; the differences are not significant, but logistic regression stays ahead on the point estimate).
 - Training without any rollout is the best world-model variant here, so the rollout in training did not help detection.
 - The follow-up was run on the original shipped model's setup; afterwards the shipped weights were retrained with the revised objective and the benchmark re-run (see the update at the top).

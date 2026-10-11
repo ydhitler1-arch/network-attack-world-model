@@ -1,5 +1,7 @@
 # Network Attack Early Warning: a world-model study on CIC-IDS2017
 
+[![CI](https://github.com/ydhitler1-arch/network-attack-world-model/actions/workflows/ci.yml/badge.svg)](https://github.com/ydhitler1-arch/network-attack-world-model/actions/workflows/ci.yml)
+
 An end-to-end, explainable network-intrusion pipeline, and an honest test of a question: **can a model that learns how network state evolves warn about an infiltration earlier or better than a simple classifier?** On CIC-IDS2017 the answer I found is **no**, and this repository shows how I got to that answer and why it is trustworthy.
 
 > **Headline.** A learned LSTM "world model" does **not** beat plain logistic regression at detecting attacks (PR-AUC 0.30 vs 0.45; the gap is not statistically significant with 41 attack episodes), shows no reliable skill at predicting attacks minutes ahead, and misses most attack types it was not trained on. The full pipeline, explanations and offline demo work and are validated. The value of the project is the pipeline and the evaluation method.
@@ -42,7 +44,7 @@ Full numbers and caveats: [docs/BENCHMARK.md](docs/BENCHMARK.md), [docs/WORLD_MO
 
 - **Evaluation design matters more than model choice.** Overlapping windows leak between train and test unless you purge around fold boundaries; thresholds calibrated on one day drift on the next (realised false-alarm rates 2% to 8% against a 2% target); a leave-one-attack-type-out test exposes weaknesses that average metrics hide.
 - **Compare against the dumbest baseline first.** A logistic regression and a linear AR(1) predictor beat the neural models. Without them the LSTM would have looked fine.
-- **Test your explanation for a failure, don't assume it.** I guessed the world model lost because it overfit. A capacity sweep showed that was mostly wrong; a follow-up with a prediction written down in advance pointed at the training objective instead, which recovers much of the gap ([docs/OVERFITTING_TEST.md](docs/OVERFITTING_TEST.md)).
+- **Test your explanation for a failure, don't assume it.** I guessed the world model lost because it overfit. A capacity sweep showed that was mostly wrong; a follow-up with a prediction written down in advance pointed at the training objective instead, which recovers much of the gap (better in all 5 seeds; [docs/OVERFITTING_TEST.md](docs/OVERFITTING_TEST.md)).
 - **Explanations need validation too.** I checked SHAP against the library implementation, measured the completeness error (9.5%), and ran a deletion test instead of trusting the plots.
 - **Say what the data cannot support.** CIC-IDS2017 has no exfiltration label, DoS attacks fit none of the five ATT&CK stages used, and a CSV cannot provide TTL or retransmission features. These limits are documented rather than hidden.
 
@@ -74,7 +76,14 @@ python -W ignore src/benchmark.py --part report           # metrics + bootstrap 
 python -W ignore src/explain.py                  # SHAP table and validation (~4 min)
 ```
 
-3. Tests: `python -W ignore tests/test_phase1.py` (PCAP to state vector) and `python -W ignore tests/test_phase5.py` (demo pipeline on the samples).
+3. Tests (also run on every push by GitHub Actions):
+
+```bash
+python -W ignore tests/test_leakage.py     # no train/test leakage in the purged blocked CV and leave-one-attack-type-out splits
+python -W ignore tests/test_phase1.py      # PCAP to state vector
+python -W ignore tests/test_phase5.py      # demo pipeline on the samples
+python -W ignore tests/test_demo_app.py    # Streamlit demo smoke test
+```
 
 Seeds are fixed (42) and training is deterministic on CPU: repeated runs gave identical metrics. Hyperparameters and the ATT&CK stage mapping are in [configs/world_model.json](configs/world_model.json).
 
@@ -89,7 +98,7 @@ Seeds are fixed (42) and training is deterministic on CPU: repeated runs gave id
 | `src/explain.py`, `src/inference.py` | SHAP, counterfactual host analysis, demo pipeline |
 | `dashboard/demo.py` | the offline Streamlit demo (`dashboard/app.py` is an older replay dashboard) |
 | `configs/`, `models/`, `data/sample/` | config, trained weights and results, demo inputs |
-| `tests/` | PCAP and demo-pipeline tests |
+| `tests/` | leakage, PCAP, demo-pipeline and demo smoke tests |
 | `docs/` | architecture, features, world model, benchmark, explainability, blog write-up, early-detection study |
 | `src/features.py`, `evaluate.py`, `detect_eval.py`, `train.py`, `model.py`, `sequence_builder.py`, `make_synthetic_data.py` | the earlier pipeline: forecasting at chance, reframed as early detection ([docs/EARLY_DETECTION_STUDY.md](docs/EARLY_DETECTION_STUDY.md)); the synthetic data has a planted ramp and is a methodology demo only |
 
