@@ -1,7 +1,7 @@
 # Offline demo for the network attack early-warning world model.
 #   docker build -t attack-demo .
 #   docker run --rm -p 8501:8501 attack-demo      then open http://localhost:8501
-FROM python:3.13-slim
+FROM python:3.15-slim
 
 ENV PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1 \
